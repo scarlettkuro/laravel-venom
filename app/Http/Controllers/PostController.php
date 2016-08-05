@@ -22,7 +22,7 @@ class PostController extends BaseController
             'user' => NULL,
             'owner' => false,
             'me' => Auth::user(),
-            'posts' => Post::orderBy('created_at', 'desc')->get(),
+            'posts' => Post::orderBy('created_at', 'desc')->limit(2)->groupby('user_id')->get(),
             'main' => true
         ]);
     }

@@ -103,7 +103,7 @@
                             <div class="col-lg-10 ">
                                 Мозок у колбі
                             </div>
-                        @if ($user)
+                        @if ($owner)
                         <!-- Button Panel -->
                             <div class="col-lg-2 text-right">
                                 <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
@@ -144,6 +144,7 @@
             </div>
         </div>
         @endforelse
+        @if (!isset($main) || !$main)
         <!-- Pagination -->
             <nav>
               <ul class="pager">
@@ -156,6 +157,7 @@
               </ul>
             </nav>
         <!-- End Pagination -->
+        @endif
         </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
