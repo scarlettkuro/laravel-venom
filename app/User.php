@@ -29,9 +29,14 @@ class User extends Authenticatable
         'remember_token',
     ];
     
-    public function posts()
+    public function posts($owner)
     {
-        return $this->hasMany(Post::class, 'user_id')->orderBy('created_at', 'desc');
+        $query = $this->hasMany(Post::class, 'user_id')->orderBy('created_at', 'desc');
+        if ($owner) {
+            return $query;
+        } else {
+            return $query->where('private', false);
+        }
     }
     
     public function deletePost($id)
