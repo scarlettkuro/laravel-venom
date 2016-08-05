@@ -3,70 +3,75 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
-use Validator;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Auth;
+use Socialite;
 
 class AuthController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Registration & Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users, as well as the
-    | authentication of existing users. By default, this controller uses
-    | a simple trait to add these behaviors. Why don't you explore it?
-    |
-    */
-
-    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
-
     /**
-     * Where to redirect users after login / registration.
+     * Redirect the user to the GitHub authentication page.
      *
-     * @var string
+     * @return Response
      */
-    protected $redirectTo = '/';
-
-    /**
-     * Create a new authentication controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function redirectToProvider()
     {
-        $this->middleware($this->guestMiddleware(), ['except' => 'logout']);
+        return Socialite::driver('google')->redirect();
     }
 
     /**
-     * Get a validator for an incoming registration request.
+     * Obtain the user information from GitHub.
      *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
+     * @return Response
      */
-    protected function validator(array $data)
+    public function handleProviderCallback(Request $request)
     {
-        return Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
-        ]);
-    }
+        try {
+            $oauthUser = Socialite::driver('google')->user();
+        }
+        catch (\Exception $e) {
+             dd($e);
+        }
 
+        $user = $this->findOrCreateUser($oauthUser);
+        
+        //$user->save();
+        
+        //dd($user);
+
+        Auth::login($user, true);
+        //dd(Auth::getSession());
+        //\Session::save();
+        
+        //Auth::loginUsingId($user->id, true);
+        
+        //dd(Auth::check());
+      //dd(Auth::user());
+        
+        return redirect()->intended('/');
+    }
+    
     /**
-     * Create a new user instance after a valid registration.
+     * Return user if exists; create and return if doesn't
      *
-     * @param  array  $data
+     * @param $oauthUser Google Data
      * @return User
      */
-    protected function create(array $data)
+    private function findOrCreateUser($oauthUser)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-        ]);
+        $user = User::where('id', $oauthUser->id)->first();
+        if ($user != NULL) {
+            
+            return $user;
+        }
+            //dd($user);
+        
+        $user = new User();
+        $user->id = $oauthUser->id;
+        $user->name = $oauthUser->name;
+        $user->nickname = explode('@', $oauthUser->email)[0];
+        $user->save();
+        return $user;
     }
 }
