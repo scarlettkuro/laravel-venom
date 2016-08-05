@@ -3,29 +3,29 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Auth;
 use Socialite;
+use Request;
 
 class AuthController extends Controller
 {
     /**
-     * Redirect the user to the GitHub authentication page.
+     * Redirect the user to the Google authentication page.
      *
      * @return Response
      */
-    public function redirectToProvider()
+    public function login()
     {
         return Socialite::driver('google')->redirect();
     }
 
     /**
-     * Obtain the user information from GitHub.
+     * Obtain the user information from Google.
      *
      * @return Response
      */
-    public function handleProviderCallback(Request $request)
+    public function auth()
     {
         try {
             $oauthUser = Socialite::driver('google')->user();
@@ -35,21 +35,35 @@ class AuthController extends Controller
         }
 
         $user = $this->findOrCreateUser($oauthUser);
-        
-        //$user->save();
-        
-        //dd($user);
 
         Auth::login($user, true);
-        //dd(Auth::getSession());
-        //\Session::save();
         
-        //Auth::loginUsingId($user->id, true);
+        return redirect(route('blog', ['nickname' => $user->nickname ]));//->intended('home');
+    }
+
+    /**
+     * Logout from Venom.
+     *
+     * @return Response
+     */
+    public function logout()
+    {
+        Auth::logout();
         
-        //dd(Auth::check());
-      //dd(Auth::user());
-        
-        return redirect()->intended('/');
+        return redirect(route('home'));
+    }
+
+    /**
+     * Update user info.
+     *
+     * @return Response
+     */
+    public function updateUser()
+    {
+        Auth::user()->name = Request::input('name');
+        Auth::user()->nickname = Request::input('nickname');
+        Auth::user()->save();
+        return redirect(route('blog', ['nickname' => Auth::user()->nickname ]));
     }
     
     /**
@@ -62,7 +76,6 @@ class AuthController extends Controller
     {
         $user = User::where('id', $oauthUser->id)->first();
         if ($user != NULL) {
-            
             return $user;
         }
             //dd($user);

@@ -28,4 +28,17 @@ class User extends Authenticatable
     protected $hidden = [
         'remember_token',
     ];
+    
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'user_id')->orderBy('created_at', 'desc');
+    }
+    
+    public function deletePost($id)
+    {
+        $post = Post::find($id); 
+        if ($post != NULL) {
+            $post->delete();
+        }
+    }
 }
