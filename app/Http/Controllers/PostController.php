@@ -17,6 +17,10 @@ class PostController extends BaseController
 {
     //use AuthorizesRequests, AuthorizesResources, DispatchesJobs, ValidatesRequests;
     
+    /*
+     * web responce
+     */
+    
     public function index () {
         $posts = Post::orderBy('created_at', 'desc')
             ->where('private', false)
@@ -30,6 +34,28 @@ class PostController extends BaseController
             'me' => Auth::user(),
             'posts' => $posts,
             'main' => true
+        ]);
+    }
+    
+    public function blog ($nickname, $page = 1) {
+        $user = User::where('nickname', $nickname)->first();
+        
+        if ($user == NULL) {
+            abort(404);
+        }
+        
+        $owner = Auth::check() ? Auth::id() == $user->id : false;
+        Paginator::currentPageResolver(function () use ($page) {
+            return $page;
+        });
+        $posts = $user->posts($owner)->paginate(5);
+        
+        return view('index',[
+            'me' => Auth::user(),
+            'user' => $user,
+            'owner' => $owner,
+            'posts' => $posts,
+            'page' => $page
         ]);
     }
     
@@ -70,23 +96,9 @@ class PostController extends BaseController
         ]);
     }
     
-    public function blog ($nickname, $page = 1) {
-        $user = User::where('nickname', $nickname)->first();
-        $owner = Auth::check() ? Auth::id() == $user->id : false;
-        Paginator::currentPageResolver(function () use ($page) {
-            return $page;
-        });
-        $posts = $user->posts($owner)->paginate(5);
-        
-        return view('index',[
-            'me' => Auth::user(),
-            'user' => $user,
-            'owner' => $owner,
-            'posts' => $posts,
-            'page' => $page
-        ]);
-    }
-    
+    /*
+     * editing
+     */
     
     public function createPost () {
         Auth::user()->createPost([
