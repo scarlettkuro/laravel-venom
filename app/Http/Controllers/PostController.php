@@ -57,10 +57,12 @@ class PostController extends BaseController
     public function readPost ($id) {
         $post = Post::find($id);
         $user =  $post->user;
-        return view('post',[
+        $owner = Auth::check() ? Auth::id() == $user->id : false;
+        $view = $owner ? 'edit' : 'read';
+        return view($view,[
             'me' => Auth::user(),
             'post' => $post,
-            'owner' => Auth::check() ? Auth::id() == $user->id : false,
+            'owner' => $owner,
             'user' => $user
         ]);
     }
