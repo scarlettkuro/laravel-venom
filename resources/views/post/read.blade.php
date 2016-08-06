@@ -9,20 +9,19 @@
                 @if ($owner)
                 <!-- Button Panel -->
                     <div class="col-lg-2 text-right">
-                        <a href="{{route('edit-post', ['id' => $post->id])}}">
-                            <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
+                        <a aria-hidden="true" class="glyphicon glyphicon-edit"
+                           href="{{route('edit-post', ['nickname'=> $post->user->nickname, 'id' => $post->id])}}">
                         </a>
-                        <a href="{{route('private-post', ['id' => $post->id])}}">
-                            <span aria-hidden="true" class="glyphicon 
+                        <a aria-hidden="true" class="pretty-request glyphicon
                                 @if ($post->private)
                                   glyphicon-eye-close
                                 @else
                                   glyphicon-eye-open
                                 @endif
-                            "></span>
+                            " href="{{route('private-post', ['id' => $post->id])}}">
                         </a>
-                        <a href="{{route('delete-post', ['id' => $post->id])}}">
-                            <span aria-hidden="true" class="glyphicon glyphicon-remove"></span>
+                        <a aria-hidden="true" class="pretty-request glyphicon glyphicon-remove" 
+                           href="{{route('delete-post', ['id' => $post->id])}}">
                         </a>
                     </div>
                 <!-- End Button Panel -->
@@ -41,11 +40,11 @@
                     <a href="{{ route('blog',['nickname'=>$post->user->nickname]) }}">{{$post->user->name }}</a>
                 </div>
                 <div class="col-lg-6 text-right">
-                    <small>{{$post->created_at}}</small>
+                    <small><a href="{{route('edit-post', ['nickname'=> $post->user->nickname, 'id' => $post->id])}}">{{$post->created_at}}</a></small>
                 </div>
             </div>
             @else
-                <small>{{$post->created_at}}</small>
+                <small><a href="{{route('read-post', ['nickname'=> $post->user->nickname, 'id' => $post->id])}}">{{$post->created_at}}</a></small>
             @endif
         </div>
     </div>

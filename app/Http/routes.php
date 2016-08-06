@@ -18,10 +18,10 @@ Route::post('user',[
     /*
      * Editing
      */
-Route::post('post',[  
+Route::post('post/create',[  
   'middleware' => 'auth', 'as' => 'create-post', 'uses' => 'PostController@createPost' ]);
 
-Route::post('post/{id}',[ 
+Route::post('post/update/{id}',[ 
   'middleware' => 'auth', 'as' => 'update-post', 'uses' => 'PostController@updatePost' ])
         ->where('id', '[0-9]+');
 
@@ -35,7 +35,10 @@ Route::get('post/delete/{id}',[
     /*
      * Read
      */
-Route::get('{nickname}/post/{id}',[ 'as' => 'edit-post', 'uses' => 'PostController@readPost' ])
+Route::get('{nickname}/read/{id}',[ 'as' => 'read-post', 'uses' => 'PostController@readPost' ])
+        ->where('id', '[0-9]+');
+
+Route::get('{nickname}/edit/{id}',[ 'as' => 'edit-post', 'uses' => 'PostController@editPost' ])
         ->where('id', '[0-9]+');
 
 Route::get('{nickname}/{page?}', [ 'as' => 'blog', 'uses' => 'PostController@blog'])

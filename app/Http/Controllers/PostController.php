@@ -33,16 +33,40 @@ class PostController extends BaseController
         ]);
     }
     
-    public function readPost ($id) {
+    public function readPost ($nickname, $id) {
         $post = Post::find($id);
+        
+        if ($post == NULL || $post->user->nickname != $nickname ) {
+            abort(404);
+        }
+        
         $user =  $post->user;
         $owner = Auth::check() ? Auth::id() == $user->id : false;
-        $view = $owner ? 'edit' : 'read';
-        return view($view,[
+        
+        return view('read',[
             'me' => Auth::user(),
             'post' => $post,
             'owner' => $owner,
             'user' => $user
+        ]);
+    }
+    
+    public function editPost ($nickname, $id) {
+        if (session("deleted-$id")) {
+            return $this->safeRedirect();
+        }
+        
+        $post = Auth::user()->getPost($id);
+        
+        if ($post == NULL || $post->user->nickname != $nickname ) {
+            abort(404);
+        }
+        
+        return view('edit',[
+            'me' => Auth::user(),
+            'post' => $post,
+            'owner' => true,
+            'user' => $post->user
         ]);
     }
     
@@ -78,8 +102,7 @@ class PostController extends BaseController
             'title' => Request::input('title'),
             'text' => Request::input('text')
         ]);
-        //return to read post
-        return redirect(route('blog', ['nickname' => Auth::user()->nickname ]));
+        return redirect()->route('read-post', ['nickname'=> Auth::user()->nickname, 'id' => $id]);
     }
     
     public function privatePost ($id) {
@@ -89,6 +112,14 @@ class PostController extends BaseController
     
     public function deletePost ($id) {
         Auth::user()->deletePost($id);
-        return redirect()->back();
+        return redirect()->back()->with("deleted-$id", true);
+    }
+    
+    public function safeRedirect() {
+        if (Auth::check()) {
+            return redirect(route('blog', ['nickname' => Auth::user()->nickname ]));
+        } else {
+            return redirect(route('home'));
+        }
     }
 }
