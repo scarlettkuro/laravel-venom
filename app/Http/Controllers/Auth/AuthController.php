@@ -63,7 +63,7 @@ class AuthController extends Controller
         Auth::user()->name = Request::input('name');
         Auth::user()->nickname = Request::input('nickname');
         Auth::user()->save();
-        return redirect()->route('blog', ['nickname' => Auth::user()->nickname ]);
+        return redirect()->back();
     }
     
     /**
