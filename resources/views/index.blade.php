@@ -7,7 +7,7 @@
         <form action="{{ route('create-post') }}" method="POST" class="stripe-block">
             {{ csrf_field() }}
             <div>
-                <textarea class="form-control" style="resize: vertical" name ="text" rows="3" maxlength="15"></textarea>
+                <textarea class="form-control" style="resize: vertical" name ="text" rows="3" maxlength="2000"></textarea>
             </div>
             <div class="text-right">
                 <button type="submit" class="btn btn-default btn-xs">

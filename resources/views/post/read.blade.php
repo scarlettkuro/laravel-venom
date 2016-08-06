@@ -20,7 +20,7 @@
                                 @endif
                             " href="{{route('private-post', ['id' => $post->id])}}">
                         </a>
-                        <a aria-hidden="true" class="pretty-request glyphicon glyphicon-remove" 
+                        <a aria-hidden="true" class="glyphicon glyphicon-remove" 
                            href="{{route('delete-post', ['id' => $post->id])}}">
                         </a>
                     </div>
