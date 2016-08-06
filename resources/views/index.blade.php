@@ -2,7 +2,7 @@
 
 @section('content')
 
-    @if ($owner)
+    @if (isset($owner) && $owner)
     <!-- New Post Form -->
         <form action="{{ route('create-post') }}" method="POST" class="stripe-block">
             {{ csrf_field() }}

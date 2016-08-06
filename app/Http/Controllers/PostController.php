@@ -25,15 +25,17 @@ class PostController extends BaseController
         $posts = Post::orderBy('created_at', 'desc')
             ->where('private', false)
             ->groupby('user_id')
-            ->limit(2)
+            ->limit(10)
             ->get();
         
         return view('index',[
-            'user' => NULL,
-            'owner' => false,
+            /*layout*/
             'me' => Auth::user(),
-            'posts' => $posts,
-            'main' => true
+            //'owner' => false, //if you own content on this page
+            'main' => true, //if it's main page
+            //'myBlog' => false, //if it's your blog page
+            /* index */
+            'posts' => $posts, //last posts from 10 different users
         ]);
     }
     
@@ -44,55 +46,72 @@ class PostController extends BaseController
             abort(404);
         }
         
+        //check if it's your own blog
         $owner = Auth::check() ? Auth::id() == $user->id : false;
+        //set page for paginator
         Paginator::currentPageResolver(function () use ($page) {
             return $page;
         });
+        //retrive posts for this page
         $posts = $user->posts($owner)->paginate(5);
         
         return view('index',[
+            /*layout*/
             'me' => Auth::user(),
-            'user' => $user,
-            'owner' => $owner,
-            'posts' => $posts,
+            'owner' => $owner, //if you own content on this page
+            'myBlog' => $owner, //if it's your blog page
+            'user' => $user, //user who own content on this page
+            /* index */
+            'posts' => $posts, 
             'page' => $page
         ]);
     }
     
     public function readPost ($nickname, $id) {
-        $post = Post::find($id);
+        //after deleting post from read page, 
+        //we can accidently be redirected here again
+        if (session("deleted-$id")) {
+            return $this->safeRedirect();
+        }
         
-        if ($post == NULL || $post->user->nickname != $nickname ) {
+        $post = Post::where('id', $id)->where('private', false)->first();
+        
+        //if post not found or it's private
+        if ($post == NULL) {
             abort(404);
         }
         
-        $user =  $post->user;
+        $user = $post->user;
+        //check if it's your post
         $owner = Auth::check() ? Auth::id() == $user->id : false;
         
         return view('read',[
             'me' => Auth::user(),
             'post' => $post,
-            'owner' => $owner,
-            'user' => $user
+            'owner' => $owner, //if you own content on this page
+            'user' => $user //user who own content on this page
         ]);
     }
     
     public function editPost ($nickname, $id) {
+        //after deleting post from edit page, 
+        //we can accidently be redirected here again
         if (session("deleted-$id")) {
             return $this->safeRedirect();
         }
         
         $post = Auth::user()->getPost($id);
         
-        if ($post == NULL || $post->user->nickname != $nickname ) {
+        //if post not found or it's not yours
+        if ($post == NULL) {
             abort(404);
         }
         
         return view('edit',[
             'me' => Auth::user(),
             'post' => $post,
-            'owner' => true,
-            'user' => $post->user
+            'owner' => true, //if you own content on this page
+            'user' => Auth::user() //user who own content on this page
         ]);
     }
     

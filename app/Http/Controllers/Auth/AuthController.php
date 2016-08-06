@@ -38,7 +38,7 @@ class AuthController extends Controller
 
         Auth::login($user, true);
         
-        return redirect()->route('blog', ['nickname' => $user->nickname ]);//->intended('home');
+        return redirect()->route('blog', ['nickname' => $user->nickname ]);
     }
 
     /**
@@ -63,7 +63,8 @@ class AuthController extends Controller
         Auth::user()->name = Request::input('name');
         Auth::user()->nickname = Request::input('nickname');
         Auth::user()->save();
-        return redirect()->back();
+        
+        return redirect()->route('blog', ['nickname' => $user->nickname ]);
     }
     
     /**
@@ -78,13 +79,14 @@ class AuthController extends Controller
         if ($user != NULL) {
             return $user;
         }
-            //dd($user);
         
-        $user = new User();
-        $user->id = $oauthUser->id;
-        $user->name = $oauthUser->name;
-        $user->nickname = explode('@', $oauthUser->email)[0];
+        $user = new User([
+            'id' => $oauthUser->id,
+            'name' => $oauthUser->name,
+            'nickname' => explode('@', $oauthUser->email)[0]
+        ]);
         $user->save();
+        
         return $user;
     }
 }

@@ -28,16 +28,18 @@
             <div class="">
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
-                    @if ($owner)
+                    {{-- @if ($me && isset($owner) && $owner) --}}
+                    @if (isset($myBlog) && $myBlog)
                     <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Заголовок</a></li>
                     <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Налаштування</a></li>
                     @endif
+                    @unless ($me && isset($myBlog) && $myBlog )
+                    <li role="presentation"><a href="{{ route('blog',['nickname'=>$me->nickname]) }}">{{ $me->name }}</a></li>
+                    @endunless
+                    @unless (isset($main) && $main)
+                    <li role="presentation"><a href="{{ route('home') }}"> Головна </a></li>
+                    @endunless
                     @if ($me)
-                        @if (!$owner)
-                        <li role="presentation"><a href="{{ route('blog',['nickname'=>$me->nickname]) }}">{{ $me->name }}</a></li>
-                        @else
-                        <li role="presentation"><a href="{{ route('home') }}"> Головна </a></li>
-                        @endif
                     <li role="presentation"><a href="{{ route('logout') }}">Вийти</a></li>
                     @else
                     <li role="presentation"><a href="{{ route('login') }}">Зайти</a></li>
@@ -50,16 +52,16 @@
                         <h1>{{$user->name or 'Venom' }}</h1>
                     </div>
 
-                    @if ($user)
+                    @if (isset($owner) && $owner)
                     <div role="tabpanel" class="tab-pane jumbotron" id="profile">
                         <form action="{{ route('update-user') }}" method="POST" class="stripe-block">
                             {{ csrf_field() }}
                             <div class="row">
                                 <div class="col-xs-6">
-                                    <input type="text" value = "{{ $user->nickname or NULL }}" name = "nickname" class="form-control" placeholder="nickname">
+                                    <input type="text" value = "{{ $me->nickname or NULL }}" name = "nickname" class="form-control" placeholder="nickname">
                                 </div>
                                 <div class="col-xs-6">
-                                    <input type="text" value = "{{ $user->name or NULL }}" name = "name" class="form-control" placeholder="Blog Name">
+                                    <input type="text" value = "{{ $me->name or NULL }}" name = "name" class="form-control" placeholder="Blog Name">
                                 </div>
                             </div>
                             <br/>

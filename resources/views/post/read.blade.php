@@ -6,7 +6,7 @@
                     <div class="col-lg-10 ">
                         {{ $post->title }}
                     </div>
-                @if ($owner)
+                @if (isset($owner) && $owner)
                 <!-- Button Panel -->
                     <div class="col-lg-2 text-right">
                         <a aria-hidden="true" class="glyphicon glyphicon-edit"
