@@ -39,11 +39,55 @@ class User extends Authenticatable
         }
     }
     
+    public function getPost($id)
+    {
+        return Post::where('id', $id)->where('user_id', $this->id)->first();
+    }
+    
+    public function createPost($fields)
+    {
+        $post = new Post($fields);
+        $post->user_id = $this->id;
+        $post->save();
+    }
+    
+    public function updatePost($id, $fields)
+    {
+        $post = $this->getPost($id);
+        
+        if ($post != NULL) {
+            $post->update($fields); //save?
+            //post belong to this user and work is done
+            return true;
+        }
+        //post don't belong to this user
+        return false;
+    }
+    
+    public function privatePost($id)
+    {
+        $post = $this->getPost($id);
+        
+        if ($post != NULL) {
+            $post->private = ! $post->private;
+            $post->save();
+            //post belong to this user and work is done
+            return true;
+        }
+        //post don't belong to this user
+        return false;
+    }
+    
     public function deletePost($id)
     {
-        $post = Post::find($id); 
+        $post = $this->getPost($id);
+        
         if ($post != NULL) {
             $post->delete();
+            //post belong to this user and work is done
+            return true;
         }
+        //post don't belong to this user
+        return false;
     }
 }

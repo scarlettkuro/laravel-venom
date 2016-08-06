@@ -11,6 +11,15 @@ class Post extends Model
     
     protected $dates = ['deleted_at'];
     
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'text', 'title'
+    ];
+    
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -19,10 +19,11 @@ class PostController extends BaseController
     
     public function index () {
         $posts = Post::orderBy('created_at', 'desc')
-                ->where('private', false)
-                ->groupby('user_id')
-                ->limit(2)
-                ->get();
+            ->where('private', false)
+            ->groupby('user_id')
+            ->limit(2)
+            ->get();
+        
         return view('index',[
             'user' => NULL,
             'owner' => false,
@@ -30,28 +31,6 @@ class PostController extends BaseController
             'posts' => $posts,
             'main' => true
         ]);
-    }
-    
-    public function createPost () {
-        if (Auth::check()) {
-            $post = new Post();
-            $post->text = Request::input('text');
-            $post->user_id = Auth::id();
-            $post->save();
-            return redirect(route('blog', ['nickname' => Auth::user()->nickname ]));
-        }
-        return redirect(route('home'));
-    }
-    
-    public function updatePost ($id) {
-        if (Auth::check()) {
-            $post = Post::find($id);
-            $post->text = Request::input('text');
-            $post->title = Request::input('title');
-            $post->save();
-            return redirect(route('blog', ['nickname' => Auth::user()->nickname ]));
-        }
-        return redirect(route('home'));
     }
     
     public function readPost ($id) {
@@ -74,7 +53,7 @@ class PostController extends BaseController
             return $page;
         });
         $posts = $user->posts($owner)->paginate(5);
-        //$posts->setCurrentPage($page);
+        
         return view('index',[
             'me' => Auth::user(),
             'user' => $user,
@@ -84,21 +63,32 @@ class PostController extends BaseController
         ]);
     }
     
+    
+    public function createPost () {
+        Auth::user()->createPost([
+            'text' => Request::input('text')
+        ]);
+        
+        return redirect(route('blog', ['nickname' => Auth::user()->nickname ]));
+    }
+    
+    public function updatePost ($id) {
+        
+        Auth::user()->updatePost($id, [
+            'title' => Request::input('title'),
+            'text' => Request::input('text')
+        ]);
+        //return to read post
+        return redirect(route('blog', ['nickname' => Auth::user()->nickname ]));
+    }
+    
     public function privatePost ($id) {
-        if (Auth::check()) {
-            $post = Post::find($id);
-            $post->private = ! $post->private;
-            $post->save();
-            return redirect(route('blog', ['nickname' => Auth::user()->nickname ]));
-        }
-        return redirect(route('home'));
+        Auth::user()->privatePost($id);
+        return redirect()->back();
     }
     
     public function deletePost ($id) {
-        if (Auth::check()) {
-            Auth::user()->deletePost($id);
-            return redirect(route('blog', ['nickname' => Auth::user()->nickname ]));
-        }
-        return redirect(route('home'));
+        Auth::user()->deletePost($id);
+        return redirect()->back();
     }
 }
