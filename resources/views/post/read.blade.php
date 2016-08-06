@@ -30,7 +30,7 @@
         </div>
     <!-- Post Body -->
         <div class="panel-body">
-                {{ $post-> text }}
+                {!! nl2br(e($post->text)) !!}
         </div>
     <!-- Post Footer -->
         <div class="panel-footer">
