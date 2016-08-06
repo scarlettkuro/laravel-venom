@@ -10,14 +10,33 @@ Route::get('logout',[ 'as' => 'logout', 'uses' => 'Auth\AuthController@logout' ]
 /*
  * User Managment
  */
-Route::post('user',[ 'as' => 'update-user', 'uses' => 'Auth\AuthController@updateUser' ]);
+Route::post('user',[  
+  'middleware' => 'auth', 'as' => 'update-user', 'uses' => 'Auth\AuthController@updateUser' ]);
 /*
  * Post managment
  */
-Route::post('post',[ 'as' => 'create-post', 'uses' => 'PostController@createPost' ]);
-Route::post('post/{id}',[ 'as' => 'update-post', 'uses' => 'PostController@updatePost' ]);
-Route::get('post/{id}',[ 'as' => 'edit-post', 'uses' => 'PostController@readPost' ]);
-Route::get('post/private/{id}',[ 'as' => 'private-post', 'uses' => 'PostController@privatePost' ]);
-Route::get('post/delete/{id}',[ 'as' => 'delete-post', 'uses' => 'PostController@deletePost' ]);
-Route::get('/{nickname}/{page?}', [ 'as' => 'blog', 'uses' => 'PostController@blog'])
+    /*
+     * Editing
+     */
+Route::post('post',[  
+  'middleware' => 'auth', 'as' => 'create-post', 'uses' => 'PostController@createPost' ]);
+
+Route::post('post/{id}',[ 
+  'middleware' => 'auth', 'as' => 'update-post', 'uses' => 'PostController@updatePost' ])
+        ->where('id', '[0-9]+');
+
+Route::get('post/private/{id}',[ 
+  'middleware' => 'auth', 'as' => 'private-post', 'uses' => 'PostController@privatePost' ])
+        ->where('id', '[0-9]+');
+
+Route::get('post/delete/{id}',[ 
+  'middleware' => 'auth', 'as' => 'delete-post', 'uses' => 'PostController@deletePost' ])
+        ->where('id', '[0-9]+');
+    /*
+     * Read
+     */
+Route::get('{nickname}/post/{id}',[ 'as' => 'edit-post', 'uses' => 'PostController@readPost' ])
+        ->where('id', '[0-9]+');
+
+Route::get('{nickname}/{page?}', [ 'as' => 'blog', 'uses' => 'PostController@blog'])
         ->where('page', '[0-9]+');
