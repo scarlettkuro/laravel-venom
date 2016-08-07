@@ -11,6 +11,7 @@ use Illuminate\Pagination\Paginator;
 use Auth;
 use App\User;
 use App\Post;
+use App\Theme;
 use Request;
 
 class PostController extends BaseController
@@ -32,6 +33,7 @@ class PostController extends BaseController
         return view('index',[
             /*layout*/
             'me' => Auth::user(),
+            'themes' => Theme::all(),
             //'owner' => false, //if you own content on this page
             'main' => true, //if it's main page
             //'myBlog' => false, //if it's your blog page
@@ -60,6 +62,7 @@ class PostController extends BaseController
         return view('index',[
             /*layout*/
             'me' => Auth::user(),
+            'themes' => Theme::all(),
             'owner' => $owner, //if you own content on this page
             'myBlog' => $owner, //if it's your blog page
             'user' => $user, //user who own content on this page
@@ -95,6 +98,7 @@ class PostController extends BaseController
         
         return view('read',[
             'me' => Auth::user(),
+            'themes' => Theme::all(),
             'post' => $post,
             'owner' => $owner, //if you own content on this page
             'user' => $user //user who own content on this page
@@ -118,6 +122,7 @@ class PostController extends BaseController
         
         return view('edit',[
             'me' => Auth::user(),
+            'themes' => Theme::all(),
             'post' => $post,
             'owner' => true, //if you own content on this page
             'user' => Auth::user() //user who own content on this page
@@ -143,7 +148,7 @@ class PostController extends BaseController
             'title' => Request::input('title'),
             'text' => Request::input('text')
         ]);
-        return redirect()->route('read-post', ['nickname'=> Auth::user()->nickname, 'id' => $id]);
+        return redirect()->route('read-post', ['id' => $id]);
     }
     
     public function privatePost ($id) 

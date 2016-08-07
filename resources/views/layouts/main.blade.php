@@ -10,20 +10,12 @@
     @else
     <title>Venom - щоденник</title>
     @endif
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://bootswatch.com/cosmo/bootstrap.min.css">
-	<style>
-            .stripe-block {
-                    margin-top: 20px;
-                    margin-bottom: 20px;
-            }
-            .jumbotron.main {
-                background-color: #d9edf7;
-            }
-            a:link, a:visited, a:hover, a:active {
-                color:inherit;
-             }
-	</style>
+        @if (isset($user))
+	<link rel="stylesheet" href="{{ asset('themes/' . $user->theme->filename) }}">
+        @else
+	<link rel="stylesheet" href="{{ asset('themes/cosmo.min.css') }}">
+        @endif
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   </head>
   <body>
     <div class="container">
@@ -41,7 +33,7 @@
                     <li role="presentation"><a href="{{ route('blog',['nickname'=>$me->nickname]) }}">{{ $me->name }}</a></li>
                     @endif
                     @unless (isset($main) && $main)
-                    <li role="presentation"><a href="{{ route('home') }}"> Головна </a></li>
+                    <li role="presentation"><a href="{{ route('home') }}">Головна</a></li>
                     @endunless
                     @if (isset($me))
                     <li role="presentation"><a href="{{ route('logout') }}">Вийти</a></li>
@@ -69,9 +61,10 @@
                                 </div>
                             </div>
                             <br/>
-                            <select class="form-control">
-                              <option>Cosmo</option>
-                              <option>Flatly</option>
+                            <select class="form-control" name="theme_id">
+                              @foreach ($themes as $theme)
+                                <option {{ $theme->id == $me->theme->id ? 'selected' : ''}} value="{{$theme->id}}">{{$theme->name}}</option>
+                              @endforeach
                             </select>
                             <br/>
                             <div class="text-right">
