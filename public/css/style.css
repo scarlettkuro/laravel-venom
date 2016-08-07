@@ -1,0 +1,10 @@
+.stripe-block {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.jumbotron.main {
+    background-color: #FF6666;
+}
+a:link, a:visited, a:hover, a:active {
+    color:inherit;
+}

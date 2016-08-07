@@ -14,7 +14,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'id', 'name', 'nickname'
+        'id', 'name', 'nickname', 'theme_id'
     ];
     
     
@@ -28,6 +28,11 @@ class User extends Authenticatable
     protected $hidden = [
         'remember_token',
     ];
+    
+    public function theme()
+    {
+        return $this->belongsTo(Theme::class, 'theme_id');
+    }
     
     public function posts($owner)
     {

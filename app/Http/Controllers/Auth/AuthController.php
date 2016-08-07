@@ -62,9 +62,10 @@ class AuthController extends Controller
     {
         Auth::user()->name = Request::input('name');
         Auth::user()->nickname = Request::input('nickname');
+        Auth::user()->theme_id = Request::input('theme_id');
         Auth::user()->save();
         
-        return redirect()->route('blog', ['nickname' => $user->nickname ]);
+        return redirect()->route('blog', ['nickname' => Auth::user()->nickname ]);
     }
     
     /**
