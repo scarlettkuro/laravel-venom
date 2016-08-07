@@ -3,70 +3,90 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
-use Validator;
-use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Routing\Controller;
+use Auth;
+use Socialite;
+use Request;
 
 class AuthController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Registration & Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users, as well as the
-    | authentication of existing users. By default, this controller uses
-    | a simple trait to add these behaviors. Why don't you explore it?
-    |
-    */
-
-    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
-
     /**
-     * Where to redirect users after login / registration.
+     * Redirect the user to the Google authentication page.
      *
-     * @var string
+     * @return Response
      */
-    protected $redirectTo = '/';
-
-    /**
-     * Create a new authentication controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function login()
     {
-        $this->middleware($this->guestMiddleware(), ['except' => 'logout']);
+        return Socialite::driver('google')->redirect();
     }
 
     /**
-     * Get a validator for an incoming registration request.
+     * Obtain the user information from Google.
      *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
+     * @return Response
      */
-    protected function validator(array $data)
+    public function auth()
     {
-        return Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
-        ]);
+        try {
+            $oauthUser = Socialite::driver('google')->user();
+        }
+        catch (\Exception $e) {
+             dd($e);
+        }
+
+        $user = $this->findOrCreateUser($oauthUser);
+
+        Auth::login($user, true);
+        
+        return redirect()->route('blog', ['nickname' => $user->nickname ]);
     }
 
     /**
-     * Create a new user instance after a valid registration.
+     * Logout from Venom.
      *
-     * @param  array  $data
+     * @return Response
+     */
+    public function logout()
+    {
+        Auth::logout();
+        
+        return redirect()->route('home');
+    }
+
+    /**
+     * Update user info.
+     *
+     * @return Response
+     */
+    public function updateUser()
+    {
+        Auth::user()->name = Request::input('name');
+        Auth::user()->nickname = Request::input('nickname');
+        Auth::user()->save();
+        
+        return redirect()->route('blog', ['nickname' => $user->nickname ]);
+    }
+    
+    /**
+     * Return user if exists; create and return if doesn't
+     *
+     * @param $oauthUser Google Data
      * @return User
      */
-    protected function create(array $data)
+    private function findOrCreateUser($oauthUser)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
+        $user = User::where('id', $oauthUser->id)->first();
+        if ($user != NULL) {
+            return $user;
+        }
+        
+        $user = new User([
+            'id' => $oauthUser->id,
+            'name' => $oauthUser->name,
+            'nickname' => explode('@', $oauthUser->email)[0]
         ]);
+        $user->save();
+        
+        return $user;
     }
 }
