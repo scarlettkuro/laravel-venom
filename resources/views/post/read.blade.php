@@ -10,7 +10,7 @@
                 <!-- Button Panel -->
                     <div class="col-lg-2 text-right">
                         <a aria-hidden="true" class="glyphicon glyphicon-edit"
-                           href="{{route('edit-post', ['nickname'=> $post->user->nickname, 'id' => $post->id])}}">
+                           href="{{route('edit-post', ['id' => $post->id])}}">
                         </a>
                         <a aria-hidden="true" class="pretty-request glyphicon
                                 @if ($post->private)
@@ -40,11 +40,11 @@
                     <a href="{{ route('blog',['nickname'=>$post->user->nickname]) }}">{{$post->user->name }}</a>
                 </div>
                 <div class="col-lg-6 text-right">
-                    <small><a href="{{route('edit-post', ['nickname'=> $post->user->nickname, 'id' => $post->id])}}">{{$post->created_at}}</a></small>
+                    <small><a href="{{route('read-post', ['id' => $post->id])}}">{{$post->created_at}}</a></small>
                 </div>
             </div>
             @else
-                <small><a href="{{route('read-post', ['nickname'=> $post->user->nickname, 'id' => $post->id])}}">{{$post->created_at}}</a></small>
+                <small><a href="{{route('read-post', ['id' => $post->id])}}">{{$post->created_at}}</a></small>
             @endif
         </div>
     </div>

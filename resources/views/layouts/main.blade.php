@@ -5,7 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Bootstrap 101 Template</title>
+    @if (isset($me) && isset($owner) && $owner)
+    <title>{{ $me->name }} | Venom</title>
+    @else
+    <title>Venom - щоденник</title>
+    @endif
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://bootswatch.com/cosmo/bootstrap.min.css">
 	<style>
@@ -28,18 +32,18 @@
             <div class="">
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
-                    {{-- @if ($me && isset($owner) && $owner) --}}
+                    {{-- @if (isset($me) && isset($owner) && $owner) --}}
                     @if (isset($myBlog) && $myBlog)
                     <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Заголовок</a></li>
                     <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Налаштування</a></li>
                     @endif
-                    @unless ($me && isset($myBlog) && $myBlog )
+                    @if (isset($me) && !(isset($myBlog) && $myBlog ))
                     <li role="presentation"><a href="{{ route('blog',['nickname'=>$me->nickname]) }}">{{ $me->name }}</a></li>
-                    @endunless
+                    @endif
                     @unless (isset($main) && $main)
                     <li role="presentation"><a href="{{ route('home') }}"> Головна </a></li>
                     @endunless
-                    @if ($me)
+                    @if (isset($me))
                     <li role="presentation"><a href="{{ route('logout') }}">Вийти</a></li>
                     @else
                     <li role="presentation"><a href="{{ route('login') }}">Зайти</a></li>
@@ -52,7 +56,7 @@
                         <h1>{{$user->name or 'Venom' }}</h1>
                     </div>
 
-                    @if (isset($owner) && $owner)
+                    @if (isset($me) && isset($owner) && $owner)
                     <div role="tabpanel" class="tab-pane jumbotron" id="profile">
                         <form action="{{ route('update-user') }}" method="POST" class="stripe-block">
                             {{ csrf_field() }}

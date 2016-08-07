@@ -21,7 +21,8 @@ class PostController extends BaseController
      * web responce
      */
     
-    public function index () {
+    public function index () 
+    {
         $posts = Post::orderBy('created_at', 'desc')
             ->where('private', false)
             ->groupby('user_id')
@@ -39,7 +40,8 @@ class PostController extends BaseController
         ]);
     }
     
-    public function blog ($nickname, $page = 1) {
+    public function blog ($nickname, $page = 1) 
+    {
         $user = User::where('nickname', $nickname)->first();
         
         if ($user == NULL) {
@@ -67,16 +69,17 @@ class PostController extends BaseController
         ]);
     }
     
-    public function readPost ($nickname, $id) {
+    public function readPost ($id) 
+    {
         //after deleting post from read page, 
         //we can accidently be redirected here again
         if (session("deleted-$id")) {
             return $this->safeRedirect();
         }
         
-        $post = Post::where('id', $id)->where('private', false)->first();
+        $post = Post::find($id);
         
-        //if post not found or it's private
+        //if post not found
         if ($post == NULL) {
             abort(404);
         }
@@ -84,6 +87,11 @@ class PostController extends BaseController
         $user = $post->user;
         //check if it's your post
         $owner = Auth::check() ? Auth::id() == $user->id : false;
+        
+        //if it's private
+        if ($post->private && !$owner) {
+            abort(403);
+        }
         
         return view('read',[
             'me' => Auth::user(),
@@ -93,7 +101,8 @@ class PostController extends BaseController
         ]);
     }
     
-    public function editPost ($nickname, $id) {
+    public function editPost ($id) 
+    {
         //after deleting post from edit page, 
         //we can accidently be redirected here again
         if (session("deleted-$id")) {
@@ -119,7 +128,8 @@ class PostController extends BaseController
      * editing
      */
     
-    public function createPost () {
+    public function createPost () 
+    {
         Auth::user()->createPost([
             'text' => Request::input('text')
         ]);
@@ -127,8 +137,8 @@ class PostController extends BaseController
         return redirect(route('blog', ['nickname' => Auth::user()->nickname ]));
     }
     
-    public function updatePost ($id) {
-        
+    public function updatePost ($id) 
+    {   
         Auth::user()->updatePost($id, [
             'title' => Request::input('title'),
             'text' => Request::input('text')
@@ -136,17 +146,20 @@ class PostController extends BaseController
         return redirect()->route('read-post', ['nickname'=> Auth::user()->nickname, 'id' => $id]);
     }
     
-    public function privatePost ($id) {
+    public function privatePost ($id) 
+    {
         Auth::user()->privatePost($id);
         return redirect()->back();
     }
     
-    public function deletePost ($id) {
+    public function deletePost ($id) 
+    {
         Auth::user()->deletePost($id);
         return redirect()->back()->with("deleted-$id", true);
     }
     
-    public function safeRedirect() {
+    public function safeRedirect() 
+    {
         if (Auth::check()) {
             return redirect(route('blog', ['nickname' => Auth::user()->nickname ]));
         } else {
