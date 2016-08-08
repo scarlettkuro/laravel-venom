@@ -6,11 +6,11 @@
     <!-- Post Header -->
         <div class="panel-heading">
                 <div class="row">
-                    <div class="col-lg-10 ">
+                    <div class="col-md-10 col-lg-10 ">
                         <input type="text" value = "{{ $post->title }}" name = "title" maxlength="100" class="form-control" placeholder="Заголовок">
                     </div>
                 <!-- Button Panel -->
-                    <div class="col-lg-2 text-right">
+                    <div class="col-md-2 col-lg-2 text-right">
                         <a aria-hidden="true" class="pretty-request glyphicon
                                 @if ($post->private)
                                   glyphicon-eye-close
@@ -34,10 +34,10 @@
     <!-- Post Footer -->
         <div class="panel-footer">
             <div class="row">
-                <div class="col-lg-6 text-left">
+                <div class="col-md-6 col-lg-6 text-left">
                     <small>{{$post->created_at}}</small>
                 </div>
-                <div class="col-lg-6 text-right">
+                <div class="col-md-6 col-lg-6 text-right">
                     <button type="submit" class="btn btn-default btn-xs">
                         <span class="glyphicon glyphicon-ok"></span>
                     </button>
