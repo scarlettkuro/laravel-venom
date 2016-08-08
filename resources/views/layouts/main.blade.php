@@ -19,7 +19,7 @@
   </head>
   <body>
     <div class="container">
-        <div class="col-lg-6 col-lg-offset-3">
+        <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
         <!-- Header -->
             <div class="">
                 <!-- Nav tabs -->
