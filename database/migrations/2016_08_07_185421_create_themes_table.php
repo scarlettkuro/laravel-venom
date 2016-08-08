@@ -21,11 +21,11 @@ class CreateThemesTable extends Migration
         
         Schema::table('users', function($table)
         {
-            $table->string('theme_id')->default(1);
+            $table->integer('theme_id')->default(1);
             $table->foreign('theme_id')->references('id')->on('themes');
         });
       
-        Theme::create([ 'id' => 1, 'name' => 'Cosmo', 'filename' => 'cosmo.min.css' ]); //default
+        Theme::create([ 'name' => 'Cosmo', 'filename' => 'cosmo.min.css' ]); //default
         Theme::create([ 'name' => 'Cerulean', 'filename' => 'cerulean.min.css' ]);
         Theme::create([ 'name' => 'Darkly', 'filename' => 'darkly.min.css' ]);
         Theme::create([ 'name' => 'Flatly', 'filename' => 'flatly.min.css' ]);
