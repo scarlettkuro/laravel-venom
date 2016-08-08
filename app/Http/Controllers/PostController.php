@@ -24,11 +24,13 @@ class PostController extends BaseController
     
     public function index () 
     {
-        $posts = Post::orderBy('created_at', 'desc')
-            ->where('private', false)
-            ->groupby('user_id')
-            ->limit(10)
-            ->get();
+        $posts = Post::whereIn('id', function($query){
+            $query->selectRaw('max(id)')
+            ->from('posts')
+            ->groupBy('user_id');
+        })->latest()
+        ->take(10)
+        ->get();
         
         return view('index',[
             /*layout*/
