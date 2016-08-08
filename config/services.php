@@ -41,7 +41,7 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_CLIENTID'),
         'client_secret' => env('GOOGLE_SECRET'),
-        'redirect' => 'http://localhost:1488/auth/',
+        'redirect' => env('APP_URL') . '/auth/',
     ],
     
 ];
